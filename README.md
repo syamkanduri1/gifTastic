@@ -2,7 +2,7 @@
 
 <!-- Put the name of the project after the # -->
 <!-- the # means h1  -->
-# Homework # 6- gifTasti Game
+# Homework # 6- gifTastic Game
 
 <!-- Put a description of what the project is -->
 To develop a small game using javascript, jQuery and html. 
