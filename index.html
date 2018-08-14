@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <title>Giphy time</title>
+   <style type="text/css">
+    .animal-btn {
+        width: 80px;
+        height: 20px;
+    }
+</style>
+</head>
+
+<body>
+    <h1>gifTastic
+        <span id="textHeading"></span>
+    </h1>
+    <div>
+        <div id = "animalBtns">
+        </div>
+        <div id ="newAnimalAdd" align = "center">
+             <p><b>Add an animal</b>
+               <input type="text" id="animalNameInput">
+               <button id="addAnimalBtn">Submit</button>
+             </p>
+         </div>
+    </div>
+    <div>
+        <div id="gifs-appear-here">
+        </div>
+    </div>
+    
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <script type="text/javascript">
+  var animalBtnsDiv = $("#animalBtns");
+  var listofAnimals = [];
+  var buttonHtml;
+  var animalDiv = $("<div class='item'>");
+
+  $("#addAnimalBtn").on("click", function() {
+     var animalNameInput = $("#animalNameInput").val().trim();
+     if (animalNameInput ===""){
+      alert("enter an animal name!");
+     }else{
+       if (listofAnimals.indexOf(animalNameInput)!= -1){
+        alert("that animal is already in the list!");
+       }else{
+          listofAnimals.push(animalNameInput);
+          for (var i = 0; i < listofAnimals.length; i++) {
+              buttonHtml = $('<input/>').attr({ type: "button", value: listofAnimals[i]});
+              buttonHtml.addClass("animal-btn");
+              buttonHtml.attr("data-animalName", listofAnimals[i]);
+          }
+          animalBtnsDiv.append(buttonHtml);
+       }
+     }
+   }); 
+  
+  animalBtnsDiv.on("click", ".animal-btn", function (){
+    var animalName = ($(this).attr("data-animalName")).replace(" ","+");
+    queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animalName + "&api_key=dc6zaTOxFJmzC&limit=10";
+    console.log("queryURL ="+ queryURL);
+    $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        .then(function(response) {
+          var results = response.data;
+          for (var i = 0; i< results.length; i++){
+              var rating = results[i].rating;
+              var p = $("<p>").text("Rating: " + rating);
+              var animalImage = $("<img>");
+              animalImage.attr("src", results[i].images.fixed_height_still.url);
+              animalImage.attr("data-still", results[i].images.fixed_height_still.url);
+              animalImage.attr("data-animate", results[i].images.fixed_height.url);
+              animalImage.attr("data-state", "still");
+              animalImage.attr("class", "gif");
+              animalDiv.prepend(p);
+              animalDiv.prepend(animalImage);
+              $("#gifs-appear-here").prepend(animalDiv);
+          }
+        });
+  });
+
+$(document).on("click", ".gif", function() {
+    var state = $(this).attr("data-state");
+    if (state === "still") {
+      $(this).attr("src", $(this).attr("data-animate"));
+      $(this).attr("data-state", "animate");
+    }
+
+    else {
+      $(this).attr("src", $(this).attr("data-still"));
+      $(this).attr("data-state", "still");
+    }
+  }); 
+
+ </script>
+</body>
+
+</html>
